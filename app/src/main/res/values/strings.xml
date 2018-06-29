@@ -100,5 +100,6 @@
     <string name="sign_out">Sign Out</string>
     <string name="add_photo">Add Photo</string>
     <string name="title_activity_thought_detail">ThoughtDetailActivity</string>
+    <string name="tag_template">#%s</string>
 
 </resources>

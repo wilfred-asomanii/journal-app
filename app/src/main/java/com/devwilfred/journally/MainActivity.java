@@ -3,6 +3,10 @@ package com.devwilfred.journally;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,24 +16,31 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, DiaryAdapter.ThoughtClickListener {
 
     private String mUserName = "nobody";
     private FirebaseAuth mFirebaseAuth;
@@ -37,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseFirestore mFirebaseFirestore;
     private Query mQuery;
     DiaryAdapter adapter;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements
         mUserName = mFirebaseUser.getDisplayName();
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         RecyclerView recyclerView = findViewById(R.id.thought_recycler);
+        fab = findViewById(R.id.fab);
 
 
         setSupportActionBar(toolbar);
@@ -73,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements
         mQuery = mFirebaseFirestore.collection("wilfred").orderBy("when", Query.Direction.DESCENDING);
 
 
-        TextView view = findViewById(R.id.no_notes);
+        final TextView view = findViewById(R.id.no_notes);
 
         /*
           had issues with setting an identifier on diary items for update/delete
@@ -91,9 +104,9 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }).build();
 
-        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+        final FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         StorageReference reference = firebaseStorage.getReference();
-        adapter = new DiaryAdapter(options, view, reference);
+        adapter = new DiaryAdapter(options, view, reference, this);
         adapter.startListening();
 
 
@@ -111,22 +124,38 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                DocumentSnapshot snapshot =  adapter.getSnapshots().getSnapshot(viewHolder.getAdapterPosition());
+                DocumentReference document =  mFirebaseFirestore.collection("wilfred")
+                        .document((String) viewHolder.itemView.getTag());
 
-                mFirebaseFirestore.collection("wilfred")
-                        .document((String) viewHolder.itemView.getTag())
-                        .delete()
+
+                       document.delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Log.d("asdsad", "onSuccess: Removed list item");
+                                Toast.makeText(MainActivity.this, "Removed", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d("ASDSa", "onFailure: "+e.getLocalizedMessage());
+                                Toast.makeText(MainActivity.this, "Removed", Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                /*firebaseStorage.getReference().child("wilfred/" + ).putFile(filePath)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot pTaskSnapshot) {
+                                Toast.makeText(AddActivity.this, "Image uploaded", Toast.LENGTH_LONG).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception pE) {
+                        Toast.makeText(AddActivity.this, "image fail", Toast.LENGTH_LONG).show();
+                    }
+                });*/
+
             }
         }).attachToRecyclerView(recyclerView);
 
@@ -178,5 +207,31 @@ public class MainActivity extends AppCompatActivity implements
                     super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void onThoughtClicked(Thought pThought, ImageView pView) {
+        Log.e("olhiuigjf", "lklhnkljhnkl");
+        Intent thoughtDetailIntent = new Intent(this, ThoughtDetailActivity.class);
+        thoughtDetailIntent.putExtra("thought", pThought);
+        thoughtDetailIntent.putExtra("thought", pThought);
+
+        // BEGIN_INCLUDE(start_activity)
+        /**
+         * Now create an {@link android.app.ActivityOptions} instance using the
+         * {@link ActivityOptionsCompat#makeSceneTransitionAnimation(Activity, Pair[])} factory
+         * method.
+         */
+        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+
+                // Now we provide a list of Pair items which contain the view we can transitioning
+                // from, and the name of the view it is transitioning to, in the launched activity
+                new Pair<View, String>(pView, "detail:header:image"),
+                new Pair<View, String>(fab, "detail:fab:image"));
+
+        // Now we can start the Activity, providing the activity options as a bundle
+        ActivityCompat.startActivity(this, thoughtDetailIntent, activityOptions.toBundle());
+
     }
 }

@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<android.support.design.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="0dp"
     android:layout_margin="5dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:background="?android:attr/selectableItemBackground">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,18 +18,14 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="2.5"
-            android:duplicateParentState="true"
             android:padding="8dp">
 
             <TextView
                 android:id="@+id/thought_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:duplicateParentState="true"
-                android:focusable="false"
                 android:gravity="start"
                 android:padding="5dp"
                 android:text="@string/app_name"
@@ -60,16 +52,15 @@
 
             <TextView
                 android:id="@+id/thought_title"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:duplicateParentState="true"
+                app:layout_constraintStart_toStartOf="parent"
                 android:ellipsize="end"
-                android:focusable="false"
                 android:gravity="start"
-                android:maxLines="2"
+                android:textAlignment="viewStart"
+                android:maxLines="4"
                 android:padding="5dp"
-                android:text="my name is wilfred and i am an app developer!!"
+                android:text="my name is w!"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 app:layout_constraintBottom_toTopOf="@id/thought_description"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -80,11 +71,8 @@
                 android:id="@+id/thought_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:duplicateParentState="true"
                 android:ellipsize="end"
-                android:focusable="false"
-                android:maxLines="4"
+                android:maxLines="1"
                 android:padding="5dp"
                 android:text="@string/large_text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -100,11 +88,13 @@
         </android.support.constraint.ConstraintLayout>
 
         <ImageView
+            android:src="@drawable/ic_pencil"
             android:id="@+id/thought_image"
             android:layout_width="100dp"
-            android:minWidth="100dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:transitionName="anim_image"
+            tools:targetApi="lollipop" />
     </LinearLayout>
-</android.support.v7.widget.CardView>
+</android.support.design.card.MaterialCardView>

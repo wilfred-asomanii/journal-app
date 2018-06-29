@@ -1,14 +1,17 @@
 package com.devwilfred.journally;
 
+import android.os.Parcelable;
+
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * this class represents an entry in the database
  */
-public class Thought {
+public class Thought implements Serializable {
 
     private String mId;
     private String mTitle;
@@ -19,6 +22,8 @@ public class Thought {
 
     @Exclude
     private String mIdentifier;
+    @Exclude
+    private String mPhotoBitmap;
 
     public Thought() {
 
@@ -77,7 +82,7 @@ public class Thought {
     }
 
     public void setTag(String pTag) {
-        mTag = "#" + pTag;
+        mTag = pTag;
     }
 
     public String getPhotoUrl() {
@@ -97,5 +102,11 @@ public class Thought {
         mWhen = pWhen;
     }
 
+    public String getPhotoBitmap() {
+        return mPhotoBitmap;
+    }
 
+    public void setPhotoBitmap(String pPhotoBitmap) {
+        mPhotoBitmap = pPhotoBitmap;
+    }
 }

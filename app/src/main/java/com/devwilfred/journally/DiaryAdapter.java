@@ -21,11 +21,18 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
     RecyclerView mRecyclerView;
     TextView mErrorView;
     StorageReference mStorageReference;
+    ThoughtClickListener mListener;
 
-    DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options, TextView pErrorView, StorageReference pReference) {
+    interface  ThoughtClickListener {
+        void onThoughtClicked(Thought pThought, ImageView pView);
+    }
+
+    DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options,
+                 TextView pErrorView, StorageReference pReference, ThoughtClickListener pListener) {
         super(options);
         mErrorView = pErrorView;
         mStorageReference = pReference;
+        mListener = pListener;
     }
 
     @Override
@@ -59,10 +66,11 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
                 .inflate(R.layout.item_thought, pViewGroup, false));
     }
 
-    class Holder extends RecyclerView.ViewHolder {
+    class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView mTitle, mDescription, mWhen, mTag;
         ImageView mImageView;
+        Thought mThought;
 
         Holder(@NonNull View itemView) {
             super(itemView);
@@ -72,9 +80,12 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
             mWhen = itemView.findViewById(R.id.thought_date);
             mImageView = itemView.findViewById(R.id.thought_image);
 
+            itemView.setOnClickListener(this);
+
         }
 
         void bind(Thought pThought) {
+            mThought = pThought;
             mTitle.setText(pThought.getTitle());
             mTag.setText(pThought.getTag());
             mDescription.setText(pThought.getDescription());
@@ -90,6 +101,11 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
             }else {
                 mImageView.setVisibility(View.GONE);
             }
+        }
+
+        @Override
+        public void onClick(View pView) {
+            mListener.onThoughtClicked(mThought, mImageView);
         }
     }
 }
