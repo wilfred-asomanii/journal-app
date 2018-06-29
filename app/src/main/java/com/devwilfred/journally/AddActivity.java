@@ -119,7 +119,7 @@ public class AddActivity extends AppCompatActivity {
         thought.setWhen(new Date());
 
 
-        mFirebaseFirestore.collection("wilfred").document(title.getText().toString()).set(thought).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mFirebaseFirestore.collection(collectionPath).document(title.getText().toString()).set(thought).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> pTask) {
                 if (pTask.isSuccessful()) {
@@ -136,12 +136,13 @@ public class AddActivity extends AppCompatActivity {
 
     protected void uploadImage(byte[] pData) {
 
-        mStorage.getReference().child("wilfred/" + title.getText().toString()).putBytes(pData)
+        mStorage.getReference().child(collectionPath + "/" + title.getText().toString()).putBytes(pData)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot pTaskSnapshot) {
                         Toast.makeText(AddActivity.this, "Image uploaded", Toast.LENGTH_LONG).show();
                         openDetail();
+                        finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override

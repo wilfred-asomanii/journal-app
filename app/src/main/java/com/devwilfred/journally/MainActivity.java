@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
         getSupportActionBar().setTitle(mUserName);
 
 
-        mQuery = mFirebaseFirestore.collection("wilfred").orderBy("when", Query.Direction.DESCENDING);
+        mQuery = mFirebaseFirestore.collection(mFirebaseUser.getUid()).orderBy("when", Query.Direction.DESCENDING);
 
 
         final TextView view = findViewById(R.id.no_notes);
