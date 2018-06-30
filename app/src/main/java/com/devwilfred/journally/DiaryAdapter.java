@@ -17,7 +17,7 @@ import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter.Holder> {
+public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView.ViewHolder> {
 
     RecyclerView mRecyclerView;
     TextView mErrorView;
@@ -27,6 +27,7 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
     interface  ThoughtClickListener {
 
         void onThoughtClicked(int pAdapterPosition, Thought pModel, ImageView pImageView);
+        void onThoughtNoImageClicked(int pAdapterPosition, Thought pModel);
     }
 
     DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options,
@@ -56,69 +57,103 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Holder holder, int position, @NonNull final Thought model) {
-        ViewCompat.setTransitionName(holder.mImageView, model.getIdentifier());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View pView) {
-                mListener.onThoughtClicked(holder.getAdapterPosition(), model, holder.mImageView);
-            }
-        });
+    public int getItemViewType(int position) {
+        if (getItem(position).getPhotoUrl() != null) return 0;
+        else return 1;
+    }
 
+    @Override
+    protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position, @NonNull final Thought model) {
         holder.itemView.setTag(model.getIdentifier());
-        holder.bind(getItem(position));
+
+        switch (holder.getItemViewType()) {
+            case 0:
+                final HolderWithImage holderWithImage = ((HolderWithImage) holder);
+                ViewCompat.setTransitionName(holderWithImage.mImageView, model.getIdentifier());
+                holderWithImage.mTitle.setText(model.getTitle());
+                holderWithImage.mTag.setText(model.getTag());
+                holderWithImage.mDescription.setText(model.getDescription());
+                holderWithImage.mWhen.setText(DateUtils.getRelativeTimeSpanString(model.getWhen().getTime()));
+                Glide.with(holder.itemView.getContext())
+                        .using(new FirebaseImageLoader())
+                        .load(mStorageReference.child(model.getPhotoUrl()))
+                        .placeholder(R.drawable.ic_loading_image)
+                        .into(holderWithImage.mImageView);
+
+                holderWithImage.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View pView) {
+                        mListener.onThoughtClicked(holder.getAdapterPosition(), model, holderWithImage.mImageView);
+                    }
+                });
+                break;
+
+            case 1:
+                final Holder holderNoImage= ((Holder) holder);
+
+                holderNoImage.mTitle.setText(model.getTitle());
+                holderNoImage.mTag.setText(model.getTag());
+                holderNoImage.mDescription.setText(model.getDescription());
+                holderNoImage.mWhen.setText(DateUtils.getRelativeTimeSpanString(model.getWhen().getTime()));
+
+                holderNoImage.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View pView) {
+                        mListener.onThoughtNoImageClicked(holder.getAdapterPosition(), model);
+                    }
+                });
+        }
     }
 
     @NonNull
     @Override
-    public Holder onCreateViewHolder(@NonNull ViewGroup pViewGroup, int pI) {
-        return new Holder(LayoutInflater.from(pViewGroup.getContext())
-                .inflate(R.layout.item_thought, pViewGroup, false));
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup pViewGroup, int viewType) {
+
+        switch (viewType) {
+            case 0:
+                return new HolderWithImage(LayoutInflater.from(pViewGroup.getContext())
+                        .inflate(R.layout.item_thought_image_type, pViewGroup, false));
+
+            case 1:
+                return new Holder(LayoutInflater.from(pViewGroup.getContext())
+                        .inflate(R.layout.item_thought_no_image, pViewGroup, false));
+        }
+
+        return null;
     }
+
 
     class Holder extends RecyclerView.ViewHolder {
 
         TextView mTitle, mDescription, mWhen, mTag;
         ImageView mImageView;
-        Thought mThought;
 
         Holder(@NonNull View itemView) {
             super(itemView);
-
-
 
             mTag = itemView.findViewById(R.id.thought_tag);
             mDescription = itemView.findViewById(R.id.thought_description);
             mTitle = itemView.findViewById(R.id.thought_title);
             mWhen = itemView.findViewById(R.id.thought_date);
             mImageView = itemView.findViewById(R.id.thought_image);
-
-
-
         }
 
-        void bind(Thought pThought) {
+    }
 
+    class HolderWithImage extends RecyclerView.ViewHolder {
 
+        TextView mTitle, mDescription, mWhen, mTag;
+        ImageView mImageView;
 
-            mThought = pThought;
-            mTitle.setText(pThought.getTitle());
-            mTag.setText(pThought.getTag());
-            mDescription.setText(pThought.getDescription());
-            mWhen.setText(DateUtils.getRelativeTimeSpanString(pThought.getWhen().getTime()));
+        HolderWithImage(@NonNull View itemView) {
+            super(itemView);
 
-            if (pThought.getPhotoUrl() != null) {
-
-                Glide.with(itemView.getContext())
-                        .using(new FirebaseImageLoader())
-                        .load(mStorageReference.child(pThought.getPhotoUrl()))
-                        .into(mImageView);
-                mImageView.setVisibility(View.VISIBLE);
-            }else {
-                mImageView.setVisibility(View.GONE);
-            }
+            mTag = itemView.findViewById(R.id.thought_tag);
+            mDescription = itemView.findViewById(R.id.thought_description);
+            mTitle = itemView.findViewById(R.id.thought_title);
+            mWhen = itemView.findViewById(R.id.thought_date);
+            mImageView = itemView.findViewById(R.id.thought_image);
         }
-
 
     }
 }

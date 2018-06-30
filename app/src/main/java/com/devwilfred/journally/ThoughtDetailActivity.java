@@ -8,6 +8,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,7 +38,7 @@ public class ThoughtDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(mThought.getTitle());
-        getSupportActionBar().setSubtitle(mThought.getTag());
+        toolbar.setSubtitle(mThought.getTag());
 
         mDescriptionTv = findViewById(R.id.thought_description);
         mDescriptionTv.setText(mThought.getDescription());
@@ -50,15 +51,18 @@ public class ThoughtDetailActivity extends AppCompatActivity {
 
         fab = findViewById(R.id.fab);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String imageTransitionName = getIntent().getStringExtra("transition");
-            mThoughtImage.setTransitionName(imageTransitionName);
-        }
+        if (getIntent().getStringExtra("transition") != null) {
 
-        Glide.with(this)
-                .using(new FirebaseImageLoader())
-                .load(reference.child(mThought.getPhotoUrl()))
-                .into(mThoughtImage);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                String imageTransitionName = getIntent().getStringExtra("transition");
+                mThoughtImage.setTransitionName(imageTransitionName);
+            }
+
+            Glide.with(this)
+                    .using(new FirebaseImageLoader())
+                    .load(reference.child(mThought.getPhotoUrl()))
+                    .into(mThoughtImage);
+        }
     }
 
 
@@ -67,5 +71,17 @@ public class ThoughtDetailActivity extends AppCompatActivity {
         Intent thoughtDetailIntent = new Intent(this, AddActivity.class);
         thoughtDetailIntent.putExtra("updateThought", mThought);
         startActivity(thoughtDetailIntent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 }

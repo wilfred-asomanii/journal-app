@@ -3,8 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="collapseActionView|always"
+        android:iconTint="@color/dark_colo"
+        android:title="@string/search_here"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
+
+    <item
         android:id="@+id/sign_out"
         android:icon="@drawable/ic_sign_out"
         app:showAsAction="always"
         android:title="@string/sign_out" />
+
+
 </menu>

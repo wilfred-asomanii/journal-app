@@ -8,9 +8,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        android:weightSum="3">
+
+
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"
             android:padding="8dp">
 
             <TextView
@@ -63,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="4"
                 android:padding="5dp"
                 android:text="@string/large_text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -77,4 +86,13 @@
 
 
         </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/thought_image"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:scaleType="centerCrop"
+            />
+    </LinearLayout>
 </android.support.design.card.MaterialCardView>

@@ -16,6 +16,9 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
 
 public class AddActivity extends AppCompatActivity {
 
@@ -58,11 +62,10 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle("ASDasd");
-        getSupportActionBar().setSubtitle("ASDasd");
+        getSupportActionBar().setTitle("Write Down");
 
         mFirebaseFirestore = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance();
@@ -76,7 +79,6 @@ public class AddActivity extends AppCompatActivity {
         collectionPath = getIntent().getStringExtra("userUid");
 
 
-
         //hiddenfab = findViewById(R.id.hidden_fab);
         fab = findViewById(R.id.fab);
 
@@ -86,17 +88,6 @@ public class AddActivity extends AppCompatActivity {
            // hiddenfab.show();
         } else hiddenfab.hide();
 */
-
-        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-
-                if (Math.abs(verticalOffset) > 200) fab.show();
-                else fab.hide();
-
-            }
-        });
 
     }
 
@@ -130,7 +121,6 @@ public class AddActivity extends AppCompatActivity {
 
             }
         });
-
 
 
     }
@@ -191,5 +181,17 @@ public class AddActivity extends AppCompatActivity {
             imageData = baos.toByteArray();
 
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 }
