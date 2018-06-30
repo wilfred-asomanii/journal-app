@@ -1,6 +1,7 @@
 package com.devwilfred.journally;
 
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -24,7 +25,8 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
     ThoughtClickListener mListener;
 
     interface  ThoughtClickListener {
-        void onThoughtClicked(Thought pThought, ImageView pView);
+
+        void onThoughtClicked(int pAdapterPosition, Thought pModel, ImageView pImageView);
     }
 
     DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options,
@@ -54,7 +56,15 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull Holder holder, int position, @NonNull Thought model) {
+    protected void onBindViewHolder(@NonNull final Holder holder, int position, @NonNull final Thought model) {
+        ViewCompat.setTransitionName(holder.mImageView, model.getIdentifier());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View pView) {
+                mListener.onThoughtClicked(holder.getAdapterPosition(), model, holder.mImageView);
+            }
+        });
+
         holder.itemView.setTag(model.getIdentifier());
         holder.bind(getItem(position));
     }
@@ -66,7 +76,7 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
                 .inflate(R.layout.item_thought, pViewGroup, false));
     }
 
-    class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class Holder extends RecyclerView.ViewHolder {
 
         TextView mTitle, mDescription, mWhen, mTag;
         ImageView mImageView;
@@ -74,17 +84,23 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
 
         Holder(@NonNull View itemView) {
             super(itemView);
+
+
+
             mTag = itemView.findViewById(R.id.thought_tag);
             mDescription = itemView.findViewById(R.id.thought_description);
             mTitle = itemView.findViewById(R.id.thought_title);
             mWhen = itemView.findViewById(R.id.thought_date);
             mImageView = itemView.findViewById(R.id.thought_image);
 
-            itemView.setOnClickListener(this);
+
 
         }
 
         void bind(Thought pThought) {
+
+
+
             mThought = pThought;
             mTitle.setText(pThought.getTitle());
             mTag.setText(pThought.getTag());
@@ -103,9 +119,6 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, DiaryAdapter
             }
         }
 
-        @Override
-        public void onClick(View pView) {
-            mListener.onThoughtClicked(mThought, mImageView);
-        }
+
     }
 }

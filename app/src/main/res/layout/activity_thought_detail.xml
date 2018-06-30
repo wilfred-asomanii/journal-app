@@ -31,7 +31,7 @@
         android:layout_marginEnd="@dimen/text_margin"
         android:layout_marginStart="@dimen/text_margin"
         android:layout_marginBottom="0dp"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/bright_color"
         android:text="Time here" />
 
     <TextView
@@ -75,16 +75,13 @@
                 android:scaleType="centerCrop"
                 android:id="@+id/diary_image"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.7"
-                android:transitionName="anim_image"
-                tools:targetApi="lollipop" />
+                app:layout_collapseParallaxMultiplier="0.7" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:titleTextColor="#ffff"
                 android:background="@android:color/transparent"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 />

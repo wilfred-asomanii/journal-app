@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -114,8 +115,8 @@ public class AddActivity extends AppCompatActivity {
         }
 
         thought.setDescription(description.getText().toString());
-        thought.setTitle(getString(R.string.tag_template, title.getText().toString()));
-        thought.setTag(tag.getText().toString());
+        thought.setTitle(title.getText().toString());
+        thought.setTag(getString(R.string.tag_template, tag.getText().toString()));
         thought.setWhen(new Date());
 
 
@@ -147,31 +148,21 @@ public class AddActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception pE) {
-                Toast.makeText(AddActivity.this, "image fail", Toast.LENGTH_LONG).show();
+                Toast.makeText(AddActivity.this, "upload fail", Toast.LENGTH_LONG).show();
             }
         });
-        imageUrl = "wilfred/" + title.getText().toString();
+        imageUrl = collectionPath + "/" + title.getText().toString();
     }
 
     void openDetail() {
-        Intent thoughtDetailIntent = new Intent(this, ThoughtDetailActivity.class);
-        thoughtDetailIntent.putExtra("thought", thought);
+        Intent intent = new Intent(this, ThoughtDetailActivity.class);
+        intent.putExtra("thought", thought);
+        intent.putExtra("transition", "diaryimage");
 
-        // BEGIN_INCLUDE(start_activity)
-        /**
-         * Now create an {@link android.app.ActivityOptions} instance using the
-         * {@link ActivityOptionsCompat#makeSceneTransitionAnimation(Activity, Pair[])} factory
-         * method.
-         */
-        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this,
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this, diaryImage, "diaryimage");
 
-                // Now we provide a list of Pair items which contain the view we can transitioning
-                // from, and the name of the view it is transitioning to, in the launched activity
-                new Pair<View, String>(diaryImage, "detail:header:image"));
-
-        // Now we can start the Activity, providing the activity options as a bundle
-        ActivityCompat.startActivity(this, thoughtDetailIntent, activityOptions.toBundle());
+        startActivity(intent, options.toBundle());
     }
 
     @Override
@@ -195,7 +186,7 @@ public class AddActivity extends AppCompatActivity {
             diaryImage.buildDrawingCache();
             Bitmap bitmap = ((BitmapDrawable) diaryImage.getDrawable()).getBitmap();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos);
 
             imageData = baos.toByteArray();
 

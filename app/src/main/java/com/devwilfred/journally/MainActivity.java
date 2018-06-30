@@ -1,33 +1,33 @@
 package com.devwilfred.journally;
 
 import android.content.Intent;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
+
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -37,7 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, DiaryAdapter.ThoughtClickListener {
@@ -49,15 +49,25 @@ public class MainActivity extends AppCompatActivity implements
     private Query mQuery;
     DiaryAdapter adapter;
     FloatingActionButton fab;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+            getWindow().setExitTransition(new android.transition.Fade());
+        }
         setContentView(R.layout.activity_main);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .build();
 
         if (mFirebaseUser == null) {
             // not signed in
@@ -89,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements
         final TextView view = findViewById(R.id.no_notes);
 
         /*
-          had issues with setting an identifier on diary items for update/delete
           got a hint from
           https://github.com/firebase/FirebaseUI-Android/issues/1131
          */
@@ -124,8 +133,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                DocumentSnapshot snapshot =  adapter.getSnapshots().getSnapshot(viewHolder.getAdapterPosition());
-                DocumentReference document =  mFirebaseFirestore.collection("wilfred")
+                DocumentReference document =  mFirebaseFirestore.collection(mFirebaseUser.getUid())
                         .document((String) viewHolder.itemView.getTag());
 
 
@@ -200,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.sign_out:
                 mFirebaseAuth.signOut();
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 startActivity(new Intent(this, SigninActivity.class));
                 finish();
                 break;
@@ -209,29 +218,17 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
+
     @Override
-    public void onThoughtClicked(Thought pThought, ImageView pView) {
-        Log.e("olhiuigjf", "lklhnkljhnkl");
-        Intent thoughtDetailIntent = new Intent(this, ThoughtDetailActivity.class);
-        thoughtDetailIntent.putExtra("thought", pThought);
-        thoughtDetailIntent.putExtra("thought", pThought);
+    public void onThoughtClicked(int pAdapterPosition, Thought pModel, ImageView pImageView) {
 
-        // BEGIN_INCLUDE(start_activity)
-        /**
-         * Now create an {@link android.app.ActivityOptions} instance using the
-         * {@link ActivityOptionsCompat#makeSceneTransitionAnimation(Activity, Pair[])} factory
-         * method.
-         */
-        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this,
+        Intent intent = new Intent(this, ThoughtDetailActivity.class);
+        intent.putExtra("thought", pModel);
+        intent.putExtra("transition", ViewCompat.getTransitionName(pImageView));
 
-                // Now we provide a list of Pair items which contain the view we can transitioning
-                // from, and the name of the view it is transitioning to, in the launched activity
-                new Pair<View, String>(pView, "detail:header:image"),
-                new Pair<View, String>(fab, "detail:fab:image"));
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this, pImageView, ViewCompat.getTransitionName(pImageView));
 
-        // Now we can start the Activity, providing the activity options as a bundle
-        ActivityCompat.startActivity(this, thoughtDetailIntent, activityOptions.toBundle());
-
+        startActivity(intent, options.toBundle());
     }
 }

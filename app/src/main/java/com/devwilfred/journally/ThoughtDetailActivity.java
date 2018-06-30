@@ -1,6 +1,7 @@
 package com.devwilfred.journally;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
@@ -34,6 +35,7 @@ public class ThoughtDetailActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(mThought.getTitle());
         getSupportActionBar().setSubtitle(mThought.getTag());
 
@@ -45,24 +47,21 @@ public class ThoughtDetailActivity extends AppCompatActivity {
         mThoughtImage = findViewById(R.id.diary_image);
 
         StorageReference reference = FirebaseStorage.getInstance().getReference();
+
+        fab = findViewById(R.id.fab);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String imageTransitionName = getIntent().getStringExtra("transition");
+            mThoughtImage.setTransitionName(imageTransitionName);
+        }
+
         Glide.with(this)
                 .using(new FirebaseImageLoader())
                 .load(reference.child(mThought.getPhotoUrl()))
                 .into(mThoughtImage);
-
-        fab = findViewById(R.id.fab);
-
-        // BEGIN_INCLUDE(detail_set_view_name)
-        /**
-         * Set the name of the view's which will be transition to, using the static values above.
-         * This could be done in the layout XML, but exposing it via static variables allows easy
-         * querying from other Activities
-         */
-        ViewCompat.setTransitionName(mThoughtImage, "detail:header:image");
-        ViewCompat.setTransitionName(fab, "detail:fab:image");
-        // END_INCLUDE(detail_set_view_name)
-
     }
+
+
 
     public void updateThought(View view) {
         Intent thoughtDetailIntent = new Intent(this, AddActivity.class);
