@@ -1,6 +1,4 @@
-package com.devwilfred.journally;
-
-import android.os.Parcelable;
+package com.devwilfred.journally.model;
 
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;

@@ -16,11 +16,11 @@
 
 
         <activity
-            android:name=".SignInActivity"
+            android:name=".views.SignInActivity"
             android:noHistory="true" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".views.MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,12 +29,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AddActivity" />
+        <activity android:name=".views.AddActivity" />
         <activity
-            android:name=".ThoughtDetailActivity"
+            android:name=".views.ThoughtDetailActivity"
             android:label="@string/title_activity_thought_detail" />
         <activity
-            android:name=".UpdateActivity"
+            android:name=".views.UpdateActivity"
             android:noHistory="true" />
     </application>
 

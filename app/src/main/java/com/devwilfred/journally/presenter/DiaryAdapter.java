@@ -1,4 +1,4 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.presenter;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.devwilfred.journally.R;
+import com.devwilfred.journally.model.Thought;
+import com.devwilfred.journally.views.ThoughtDetailActivity;
+import com.devwilfred.journally.views.UpdateActivity;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
@@ -27,7 +31,7 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView
     private ThoughtClickListener mListener;
 
 
-    DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options,
+    public DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options,
                  TextView pErrorView, StorageReference pReference, ThoughtClickListener pListener) {
         super(options);
         mErrorView = pErrorView;

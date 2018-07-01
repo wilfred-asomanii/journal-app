@@ -1,4 +1,4 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.views;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -21,6 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.devwilfred.journally.R;
+import com.devwilfred.journally.model.Thought;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

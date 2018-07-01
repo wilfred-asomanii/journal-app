@@ -1,4 +1,4 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.views;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.devwilfred.journally.R;
+import com.devwilfred.journally.model.Thought;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;

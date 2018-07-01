@@ -1,4 +1,4 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.presenter;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -9,6 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.devwilfred.journally.R;
+import com.devwilfred.journally.model.Thought;
+import com.devwilfred.journally.views.ThoughtDetailActivity;
+import com.devwilfred.journally.views.UpdateActivity;
 
 import java.util.List;
 

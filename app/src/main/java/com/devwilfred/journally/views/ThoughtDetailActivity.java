@@ -1,4 +1,4 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.views;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.devwilfred.journally.R;
+import com.devwilfred.journally.model.Thought;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;

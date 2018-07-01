@@ -1,6 +1,8 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.presenter;
 
 import android.widget.ImageView;
+
+import com.devwilfred.journally.model.Thought;
 
 public interface ThoughtClickListener {
 

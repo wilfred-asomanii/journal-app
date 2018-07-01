@@ -1,4 +1,4 @@
-package com.devwilfred.journally;
+package com.devwilfred.journally.views;
 
 import android.content.Intent;
 
@@ -24,7 +24,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.devwilfred.journally.presenter.DiaryAdapter;
+import com.devwilfred.journally.R;
+import com.devwilfred.journally.presenter.SearchAdapter;
+import com.devwilfred.journally.model.Thought;
+import com.devwilfred.journally.presenter.ThoughtClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.android.gms.auth.api.Auth;
@@ -47,8 +51,7 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener,
-        FilterFragment.ReceiveFilter, ThoughtClickListener {
+        GoogleApiClient.OnConnectionFailedListener, ThoughtClickListener, FilterFragment.ReceiveFilter {
 
     RecyclerView mRecyclerView;
     TextView mErrorView, mIsFilterTv, mFilterTv;
