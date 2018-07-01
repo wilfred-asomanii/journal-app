@@ -14,7 +14,7 @@ You can clone the repo or just install the [APK](https://github.com/wil-power/jo
 
 ### Prerequisite To Run Code
 
-* Android Studio 2.4 and above
+* Android Studio 2.4 or above.
 * Build tools version 28
 * Add Firebase to the project. Follow [Add Firebase to Android Project](https://firebase.google.com/docs/android/setup)
 * Add Google Authentication to the project. 
