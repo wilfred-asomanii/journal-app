@@ -20,11 +20,13 @@ Follow [Add Google Authentication](https://developers.google.com/identity/sign-i
 
 # Screenshots
 
-1             |  2          | 3                         | 4
-:-------------------------:|:-------------------------:|:--------------:|:----:
+1             |  2          | 3
+:-------------------------:|:-------------------------:|:--------------:
 ![screen1](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-201002.png)  | 
  ![screen2](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-200852.png) | 
- ![screen3](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202451.png) | 
+ ![screen3](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202451.png)
+ 
+ 
  ![screen4](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202500.png) 
 
 ## Features
