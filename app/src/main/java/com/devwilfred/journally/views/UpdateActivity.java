@@ -18,11 +18,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.devwilfred.journally.R;
+import com.devwilfred.journally.controller.Controller;
 import com.devwilfred.journally.model.Thought;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -36,10 +36,10 @@ public class UpdateActivity extends AppCompatActivity {
     private EditText mTagText, mTitleText, mDescriptionText;
     private ImageView diaryImage;
 
-    private FirebaseFirestore mFirebaseFirestore;
     private String collectionPath;
     FirebaseStorage mStorage;
     Thought updateThought;
+    private Controller mController;
 
     public static final String TRANSITION_EXTRA = "transition";
     public static final String UPDATE_THOUGHT = "update_thought";
@@ -64,16 +64,15 @@ public class UpdateActivity extends AppCompatActivity {
 
         diaryImage = findViewById(R.id.diary_image);
 
-        mFirebaseFirestore = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance();
         StorageReference reference = FirebaseStorage.getInstance().getReference();
+        mController = Controller.getInstance();
 
 
         if (updateThought.getPhotoUrl() != null) {
             Glide.with(this)
                     .using(new FirebaseImageLoader())
                     .load(reference.child(updateThought.getPhotoUrl()))
-                    .placeholder(R.drawable.ic_loading_image)
                     .into(diaryImage);
         }
 
@@ -106,7 +105,7 @@ public class UpdateActivity extends AppCompatActivity {
     }
 
     // update
-    public void addToDiary(View view) {
+    public void updateDiary(View view) {
 
 
         TextInputLayout titleTextInput = findViewById(R.id.title_text_input_layout);
@@ -130,16 +129,13 @@ public class UpdateActivity extends AppCompatActivity {
         Toast.makeText(UpdateActivity.this, R.string.loading_message, Toast.LENGTH_LONG).show();
 
         // update an entry
-
-        mFirebaseFirestore.collection(collectionPath).document(updateThought.getTitle()).delete();
-
+        String oldTitle = updateThought.getTitle();
         updateThought.setTitle(mTitleText.getText().toString());
         updateThought.setTag(mTagText.getText().toString());
         updateThought.setDescription(mDescriptionText.getText().toString());
 
 
-        mFirebaseFirestore.collection(collectionPath).document(updateThought.getTitle())
-                .set(updateThought)
+        mController.updateThought(collectionPath, oldTitle, updateThought)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> pTask) {

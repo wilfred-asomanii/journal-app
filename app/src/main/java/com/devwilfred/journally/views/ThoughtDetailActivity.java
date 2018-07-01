@@ -54,7 +54,6 @@ public class ThoughtDetailActivity extends AppCompatActivity {
             Glide.with(this)
                     .using(new FirebaseImageLoader())
                     .load(reference.child(thought.getPhotoUrl()))
-                    .placeholder(R.drawable.ic_loading_image)
                     .into(thoughtImage);
         }
         if (getIntent().getStringExtra(TRANSITION_EXTRA) != null) {

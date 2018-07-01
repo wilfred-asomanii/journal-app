@@ -23,13 +23,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.devwilfred.journally.R;
+import com.devwilfred.journally.controller.Controller;
 import com.devwilfred.journally.model.Thought;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,14 +41,13 @@ public class AddActivity extends AppCompatActivity {
     private ImageView diaryImage;
     private Button addPhotoBtn;
 
-    private FirebaseFirestore mFirebaseFirestore;
     private String collectionPath;
     private String imageUrl;
     private Uri filePath;
     byte[] imageData;
-    FirebaseStorage mStorage;
     Thought thought;
     ProgressDialog progressDialog;
+    private Controller mController;
 
     public static final int IMAGE_REQUEST = 1022;
 
@@ -69,8 +67,8 @@ public class AddActivity extends AppCompatActivity {
         }
 
 
-        mFirebaseFirestore = FirebaseFirestore.getInstance();
-        mStorage = FirebaseStorage.getInstance();
+
+        mController = Controller.getInstance();
 
         mTagText = findViewById(R.id.tag_edit_text);
         mTitleText = findViewById(R.id.title_edit_text);
@@ -133,9 +131,7 @@ public class AddActivity extends AppCompatActivity {
             thought.setTag(getString(R.string.tag_template, mTagText.getText().toString()));
             thought.setWhen(new Date());
 
-
-            mFirebaseFirestore.collection(collectionPath).document(mTitleText.getText().toString())
-                    .set(thought).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mController.addThought(collectionPath, thought).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> pTask) {
                     if (pTask.isSuccessful()) {
@@ -154,8 +150,7 @@ public class AddActivity extends AppCompatActivity {
     protected void uploadImage(byte[] pData) {
 
         // upload image to firebase storage
-        mStorage.getReference().child(collectionPath + "/" + mTitleText.getText().toString()).putBytes(pData)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        mController.upLoadImage(pData, collectionPath, mTitleText.getText().toString()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot pTaskSnapshot) {
 

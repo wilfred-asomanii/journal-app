@@ -24,11 +24,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.devwilfred.journally.presenter.DiaryAdapter;
+import com.devwilfred.journally.adapters.DiaryAdapter;
 import com.devwilfred.journally.R;
-import com.devwilfred.journally.presenter.SearchAdapter;
+import com.devwilfred.journally.adapters.SearchAdapter;
+import com.devwilfred.journally.controller.Controller;
 import com.devwilfred.journally.model.Thought;
-import com.devwilfred.journally.presenter.ThoughtClickListener;
+import com.devwilfred.journally.adapters.ThoughtClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.android.gms.auth.api.Auth;
@@ -38,7 +39,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements
     // hold entries in a list to be able to search
     private List<Thought> mThoughts = new ArrayList<>();
     private SearchAdapter mSearchAdapter;
+    private Controller mController;
 
 
     @Override
@@ -101,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         FirebaseFirestore.setLoggingEnabled(true);
+
+        mController = Controller.getInstance();
 
         mFirebaseFirestore = FirebaseFirestore.getInstance();
         mFirebaseFirestore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
@@ -143,10 +146,8 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
-                DocumentReference document = mFirebaseFirestore.collection(mFirebaseUser.getUid())
-                        .document((String) viewHolder.itemView.getTag());
 
-                document.delete()
+                mController.deleteThought(mFirebaseUser.getUid(), (String) viewHolder.itemView.getTag())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {

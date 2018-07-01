@@ -128,7 +128,7 @@
         android:src="@drawable/ic_add_circular_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="addToDiary"
+        android:onClick="updateDiary"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/standard_margin"
