@@ -61,19 +61,20 @@ public class DataPresenter {
     /**
      * delete an entry from the database
      * @param pUserUid the collection path unique to the user
-     * @param pThought the entry to be deleted
+     * @param pIdentifier of the entry to be deleted
      * @return a Firestore task to be observed
      */
-    public Task<Void> deleteThought(String pUserUid, String pThought) {
+    public Task<Void> deleteThought(String pUserUid, String pIdentifier) {
 
         DocumentReference document = mFirebaseFirestore.collection(pUserUid)
-                .document(pThought);
+                .document(pIdentifier);
 
         return document.delete();
     }
 
     /**
      * update an entry
+     * weird implementation of update
      * @param pUserUid collection path
      * @param pOldThought path of the entry to be updated
      * @param pNewThought the updated entry
