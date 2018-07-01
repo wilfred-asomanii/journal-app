@@ -8,6 +8,6 @@
     <item name="colorAccent">@color/colorAccent</item>
 
     <item name="colorSecondary">#212121</item>
-        <item name="android:actionMenuTextColor">@color/dark_colo</item>
+        <item name="android:actionMenuTextColor">@color/dark_color</item>
     </style>
 </resources>

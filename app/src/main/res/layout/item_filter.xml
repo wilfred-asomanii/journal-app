@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:padding="@dimen/standard_margin">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/filter_tag"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/dark_colo"
+        android:textColor="@color/dark_color"
         android:layout_margin="@dimen/text_margin"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.devwilfred.journally">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,7 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SigninActivity" />
+
+
+        <activity
+            android:name=".SignInActivity"
+            android:noHistory="true" />
+
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -22,10 +28,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".AddActivity" />
         <activity
             android:name=".ThoughtDetailActivity"
-            android:label="@string/title_activity_thought_detail"></activity>
+            android:label="@string/title_activity_thought_detail" />
+        <activity
+            android:name=".UpdateActivity"
+            android:noHistory="true" />
     </application>
 
 </manifest>

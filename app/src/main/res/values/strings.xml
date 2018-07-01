@@ -101,5 +101,29 @@
     <string name="add_photo">Add Photo</string>
     <string name="title_activity_thought_detail">ThoughtDetailActivity</string>
     <string name="tag_template">#%s</string>
+    <string name="filtered_by">Filtered by "%s"</string>
+    <string name="progress_dialog_title">Writing Diary</string>
+    <string name="image_chooser_title">Choose a photo</string>
+    <string name="field_title">title</string>
+    <string name="field_tag">tag</string>
+    <string name="field_when">when</string>
+    <string name="field_description">description</string>
+    <string name="failure_message">operation failed</string>
+    <string name="loading_message">Wait For It..</string>
+    <string name="filter_dialog_title">Select a Tag Filter</string>
+    <string name="delete_done">Deleted</string>
+    <string name="no_filter">No Filter Applied</string>
+    <string name="showing_all_entries">Showing All Thoughts</string>
+    <string name="auth_fail">Authentication failed.</string>
+    <string name="google_service_err">Google Play Services error.</string>
+    <string name="sign_in_fail">Google Sign In failed.</string>
+    <string name="write_down">Write Down</string>
+    <string name="user_uid_preference">userUid</string>
+    <string name="username_preference">username</string>
+    <string name="hint_title">What\'s On Your Mind</string>
+    <string name="hint_tag">Tag It!</string>
+    <string name="description_hint">Describe It Here</string>
+    <string name="filter_applied">Filter Applied</string>
+    <string name="empty_field_error">Fill Out All Fields</string>
 
 </resources>

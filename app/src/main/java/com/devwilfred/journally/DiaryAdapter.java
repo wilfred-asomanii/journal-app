@@ -1,5 +1,6 @@
 package com.devwilfred.journally;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
@@ -9,26 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+/**
+ * Adapter class for recycler view
+ */
 public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView.ViewHolder> {
 
-    RecyclerView mRecyclerView;
-    TextView mErrorView;
-    StorageReference mStorageReference;
-    ThoughtClickListener mListener;
+    private RecyclerView mRecyclerView;
+    private TextView mErrorView;
+    private StorageReference mStorageReference;
+    private ThoughtClickListener mListener;
 
-    interface  ThoughtClickListener {
-
-        void onThoughtClicked(int pAdapterPosition, Thought pModel, ImageView pImageView);
-        void onThoughtNoImageClicked(int pAdapterPosition, Thought pModel);
-    }
 
     DiaryAdapter(@NonNull FirestoreRecyclerOptions<Thought> options,
                  TextView pErrorView, StorageReference pReference, ThoughtClickListener pListener) {
@@ -63,27 +60,40 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position, @NonNull final Thought model) {
+    protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position,
+                                    @NonNull final Thought model) {
+
         holder.itemView.setTag(model.getIdentifier());
 
         switch (holder.getItemViewType()) {
             case 0:
+
                 final HolderWithImage holderWithImage = ((HolderWithImage) holder);
+
                 ViewCompat.setTransitionName(holderWithImage.mImageView, model.getIdentifier());
                 holderWithImage.mTitle.setText(model.getTitle());
                 holderWithImage.mTag.setText(model.getTag());
                 holderWithImage.mDescription.setText(model.getDescription());
                 holderWithImage.mWhen.setText(DateUtils.getRelativeTimeSpanString(model.getWhen().getTime()));
+
                 Glide.with(holder.itemView.getContext())
                         .using(new FirebaseImageLoader())
                         .load(mStorageReference.child(model.getPhotoUrl()))
                         .placeholder(R.drawable.ic_loading_image)
                         .into(holderWithImage.mImageView);
 
+                holderWithImage.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View pView) {
+                        mListener.onThoughtLongClicked(model, holderWithImage.mImageView);
+                        return true;
+                    }
+                });
+
                 holderWithImage.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View pView) {
-                        mListener.onThoughtClicked(holder.getAdapterPosition(), model, holderWithImage.mImageView);
+                        mListener.onThoughtClicked(model, holderWithImage.mImageView);
                     }
                 });
                 break;
@@ -96,10 +106,24 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView
                 holderNoImage.mDescription.setText(model.getDescription());
                 holderNoImage.mWhen.setText(DateUtils.getRelativeTimeSpanString(model.getWhen().getTime()));
 
+                holderNoImage.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View pView) {
+                        pView.getContext().startActivity(
+                                new Intent(pView.getContext(), UpdateActivity.class)
+                                        .putExtra(UpdateActivity.UPDATE_THOUGHT, model));
+                        return true;
+                    }
+                });
+
                 holderNoImage.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View pView) {
-                        mListener.onThoughtNoImageClicked(holder.getAdapterPosition(), model);
+                        Intent intent = new Intent(holderNoImage.itemView.getContext(),
+                                ThoughtDetailActivity.class);
+                        intent.putExtra(ThoughtDetailActivity.VIEW_THOUGHT_EXTRA, model);
+
+                        holderNoImage.itemView.getContext().startActivity(intent);
                     }
                 });
         }
@@ -128,7 +152,7 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView
         TextView mTitle, mDescription, mWhen, mTag;
         ImageView mImageView;
 
-        Holder(@NonNull View itemView) {
+        Holder(@NonNull final View itemView) {
             super(itemView);
 
             mTag = itemView.findViewById(R.id.thought_tag);
@@ -136,6 +160,8 @@ public class DiaryAdapter extends FirestoreRecyclerAdapter<Thought, RecyclerView
             mTitle = itemView.findViewById(R.id.thought_title);
             mWhen = itemView.findViewById(R.id.thought_date);
             mImageView = itemView.findViewById(R.id.thought_image);
+
+
         }
 
     }

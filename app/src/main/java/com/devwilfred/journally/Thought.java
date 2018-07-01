@@ -22,8 +22,7 @@ public class Thought implements Serializable {
 
     @Exclude
     private String mIdentifier;
-    @Exclude
-    private String mPhotoBitmap;
+
 
     public Thought() {
 
@@ -100,13 +99,5 @@ public class Thought implements Serializable {
 
     public void setWhen(Date pWhen) {
         mWhen = pWhen;
-    }
-
-    public String getPhotoBitmap() {
-        return mPhotoBitmap;
-    }
-
-    public void setPhotoBitmap(String pPhotoBitmap) {
-        mPhotoBitmap = pPhotoBitmap;
     }
 }

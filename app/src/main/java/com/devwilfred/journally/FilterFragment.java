@@ -1,13 +1,9 @@
 package com.devwilfred.journally;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,21 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.firebase.ui.firestore.SnapshotParser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
-
-import java.io.FileInputStream;
-import java.io.Serializable;
-import java.util.Date;
 
 public class FilterFragment extends DialogFragment {
 
@@ -37,11 +24,11 @@ public class FilterFragment extends DialogFragment {
 
 
     private RecyclerView filterRecycler;
-    private RecieveFilter mRecieveFilter;
-    private Query mQuery;
+    private ReceiveFilter mReceiveFilter;
     FirestoreRecyclerOptions<Thought> options;
-    private FirebaseFirestore mFirebaseFirestore;
     private String userUid;
+    Adapter adapter;
+
 
 
     public static FilterFragment newInstance(String userUid) {
@@ -53,8 +40,8 @@ public class FilterFragment extends DialogFragment {
         return fragment;
     }
 
-    interface RecieveFilter {
-        void onRevievedFilter(Thought pFilter);
+    interface ReceiveFilter {
+        void onReceivedFilter(Thought pFilter);
     }
 
     @NonNull
@@ -66,13 +53,13 @@ public class FilterFragment extends DialogFragment {
 
         filterRecycler = v.findViewById(R.id.filter_recycler);
 
-        userUid = getArguments().getString("uuid");
+        if (getArguments() != null) userUid = getArguments().getString("uuid");
 
         setUpRecycler();
 
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
-                .setTitle("Select a Tag Filter")
+                .setTitle(R.string.filter_dialog_title)
                 .setCancelable(true)
                 .create();
     }
@@ -81,17 +68,17 @@ public class FilterFragment extends DialogFragment {
 
     public void setUpRecycler() {
 
-        mFirebaseFirestore = FirebaseFirestore.getInstance();
-        mFirebaseFirestore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseFirestore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true).build());
 
-        mQuery = mFirebaseFirestore.collection(userUid).orderBy("tag");
+        Query query = firebaseFirestore.collection(userUid).orderBy(getString(R.string.field_tag));
 
         options = new FirestoreRecyclerOptions.Builder<Thought>()
-                .setQuery(mQuery, Thought.class).build();
+                .setQuery(query, Thought.class).build();
 
         filterRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Adapter adapter = new Adapter(options);
+        adapter = new Adapter(options);
         adapter.startListening();
         filterRecycler.setAdapter(adapter);
     }
@@ -101,19 +88,35 @@ public class FilterFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        mRecieveFilter = (RecieveFilter) context;
+        mReceiveFilter = (ReceiveFilter) context;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        adapter.stopListening();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (adapter != null) {
+            adapter.startListening();
+        }
+
+    }
 
     class Adapter extends FirestoreRecyclerAdapter<Thought, Holder> {
 
         /**
-         * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
-         * FirestoreRecyclerOptions} for configuration options.
+         * Create a new RecyclerView mDiaryAdapter that listens to a Firestore Query.  See {@link
+         * FirestoreRecyclerOptions} for configuration mOptions.
          *
-         * @param options
+         * @param options configurations for firebase; Query, etc
          */
-        public Adapter(@NonNull FirestoreRecyclerOptions<Thought> options) {
+        Adapter(@NonNull FirestoreRecyclerOptions<Thought> options) {
             super(options);
         }
 
@@ -123,7 +126,8 @@ public class FilterFragment extends DialogFragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View pView) {
-                    mRecieveFilter.onRevievedFilter(model);
+                    mReceiveFilter.onReceivedFilter(model);
+                    dismiss();
                 }
             });
         }
@@ -141,7 +145,7 @@ public class FilterFragment extends DialogFragment {
     class Holder extends RecyclerView.ViewHolder {
         TextView tagName;
 
-        public Holder(@NonNull View itemView) {
+        Holder(@NonNull View itemView) {
             super(itemView);
 
             tagName = itemView.findViewById(R.id.filter_tag);

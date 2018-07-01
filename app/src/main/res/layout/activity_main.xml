@@ -66,7 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            app:titleTextColor="@color/dark_colo"/>
+            app:titleTextColor="@color/dark_color"/>
 
         <FrameLayout
             android:id="@+id/filter_bar_container"
@@ -79,7 +79,6 @@
             android:paddingRight="12dp">
 
             <android.support.design.card.MaterialCardView
-                android:id="@+id/filter_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorPrimaryDark"
@@ -92,7 +91,7 @@
                     android:gravity="center_vertical">
 
                     <ImageView
-                        android:id="@+id/button_filter"
+                        android:id="@+id/filter_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -100,42 +99,41 @@
                         android:src="@drawable/ic_filter" />
 
                     <LinearLayout
-                        android:id="@+id/text_current_search_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@+id/button_filter"
+                        android:layout_toEndOf="@+id/filter_icon"
                         android:orientation="vertical"
                         android:paddingBottom="8dp"
                         android:paddingTop="8dp">
 
                         <TextView
-                            android:id="@+id/text_current_search"
+                            android:id="@+id/is_filtered_tv"
                             style="@style/TextAppearance.AppCompat.Body1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="No Filter"
+                            android:text="@string/no_filter"
                              />
 
                         <TextView
-                            android:id="@+id/text_current_sort_by"
+                            android:id="@+id/current_filter"
                             style="@style/Base.TextAppearance.AppCompat.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Showing All Entries"
+                            android:text="@string/showing_all_entries"
                             />
 
                     </LinearLayout>
 
                     <ImageView
-                        android:id="@+id/button_clear_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:padding="8dp"
-                        android:src="@drawable/ic_clear" />
+                        android:src="@drawable/ic_clear"
+                        android:onClick="clearFilter"/>
 
                 </RelativeLayout>
 
