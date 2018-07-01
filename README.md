@@ -1,21 +1,29 @@
 # Journal App
 
-This is an App with which users can put down thoughts, feelings or even
-other important stuff for safe keeping. All data will be synced across their devices.
+This is an App with which users can put down thoughts, feelings or even other important stuff for safe keeping.
+This project is the final challenge of the 2018 ALCwithGoogle programme.
+
+This project is the direct result of the motivation I've got from ALC to take my android develompent
+to another level.
+
+This is a relatively simple implementaion of CRUD using Firebase Firestore, Storage and Material Design.
+Text input are stored in Firestore, images attached are uploaded to cloud storage.
+This data is persistent online, hence, even if the user logs into another device, their data are available.
+And the app has a cool name too *Journally*
 
 ## Getting Started
 
-To run this code or install the APK directly, you need:
+You can clone the repo or just install the [APK](https://github.com/wil-power/journal-app/blob/master/release/app-release.apk)
 
-### Run Code
+### Prerequisite To Run Code
 
-* Android Studio
+* Android Studio 2.4 and above
 * Build tools version 28
 * Add Firebase to the project. Follow [Add Firebase to Android Project](https://firebase.google.com/docs/android/setup)
 * Add Google Authentication to the project. 
 Follow [Add Google Authentication](https://developers.google.com/identity/sign-in/android/start-integrating)
 
-### Installing APK
+### Prerequisites To Install APK
 * Make sure Google Play Services is installed on target device.
 
 # Screenshots
