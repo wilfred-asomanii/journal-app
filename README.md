@@ -3,7 +3,7 @@
 This is an App with which users can put down thoughts, feelings or even other important stuff for safe keeping.
 This project is the final challenge of the 2018 ALCwithGoogle programme.
 
-This is a relatively simple implementaion of CRUD using Firebase Firestore, Storage and Material Design.
+This is a relatively simple implementation of CRUD using Firebase Firestore, Storage and Material Design.
 Text input are stored in Firestore, images attached are uploaded to cloud storage.
 This data is persistent online, hence, even if the user logs into another device, their data are available.
 And the app has a cool name too *Journally*
