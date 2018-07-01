@@ -29,7 +29,7 @@
             android:layout_gravity="center_horizontal|center_vertical"
             android:textAlignment="center"
             android:layout_margin="40dp"
-            android:id="@+id/no_notes"
+            android:id="@+id/no_thoughts"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

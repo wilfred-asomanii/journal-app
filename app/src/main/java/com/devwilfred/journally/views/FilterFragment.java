@@ -1,3 +1,18 @@
+/**
+ * Copyright 2018 Wilfred Agyei Asomani
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.devwilfred.journally.views;
 
 import android.app.Dialog;
@@ -27,13 +42,17 @@ public class FilterFragment extends DialogFragment {
 
 
     private RecyclerView filterRecycler;
+
     private ReceiveFilter mReceiveFilter;
-    FirestoreRecyclerOptions<Thought> options;
     private String userUid;
-    Adapter adapter;
+    private Adapter adapter;
 
 
-
+    /**
+     * return a new instance of this fragment
+     * @param userUid the unique identifier of a user
+     * @return instance of this fragment
+     */
     public static FilterFragment newInstance(String userUid) {
         FilterFragment fragment = new FilterFragment();
         Bundle bundle = new Bundle();
@@ -43,6 +62,9 @@ public class FilterFragment extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * interface to send selected filter to the main activity
+     */
     interface ReceiveFilter {
         void onReceivedFilter(Thought pFilter);
     }
@@ -68,7 +90,6 @@ public class FilterFragment extends DialogFragment {
     }
 
 
-
     public void setUpRecycler() {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -77,7 +98,7 @@ public class FilterFragment extends DialogFragment {
 
         Query query = firebaseFirestore.collection(userUid).orderBy(getString(R.string.field_tag));
 
-        options = new FirestoreRecyclerOptions.Builder<Thought>()
+        FirestoreRecyclerOptions<Thought> options = new FirestoreRecyclerOptions.Builder<Thought>()
                 .setQuery(query, Thought.class).build();
 
         filterRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -111,11 +132,20 @@ public class FilterFragment extends DialogFragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (adapter != null) adapter.stopListening();
+    }
+
+
+    /**
+     * Adapter class of the filter recycler view
+     */
     class Adapter extends FirestoreRecyclerAdapter<Thought, Holder> {
 
         /**
-         * Create a new RecyclerView mDiaryAdapter that listens to a Firestore Query.  See {@link
-         * FirestoreRecyclerOptions} for configuration mOptions.
+         * Create a new adapter that listens to a Firestore Query.
          *
          * @param options configurations for firebase; Query, etc
          */

@@ -1,25 +1,42 @@
+/**
+ * Copyright 2018 Wilfred Agyei Asomani
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.devwilfred.journally.views;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.devwilfred.journally.R;
-import com.devwilfred.journally.controller.Controller;
 import com.devwilfred.journally.model.Thought;
+import com.devwilfred.journally.presenter.DataPresenter;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,21 +45,20 @@ import com.google.firebase.storage.StorageReference;
 
 
 /**
- *  update the details of an entry
- *  currently, entries with images cannot have their images changed or removed
+ * update the details of an entry
+ * currently, entries with images cannot have their images changed or removed
  */
 public class UpdateActivity extends AppCompatActivity {
 
-    private EditText mTagText, mTitleText, mDescriptionText;
-    private ImageView diaryImage;
-
-    private String collectionPath;
-    FirebaseStorage mStorage;
-    Thought updateThought;
-    private Controller mController;
-
     public static final String TRANSITION_EXTRA = "transition";
     public static final String UPDATE_THOUGHT = "update_thought";
+    FirebaseStorage mStorage;
+    Thought updateThought;
+    private EditText mTagText, mTitleText, mDescriptionText;
+    private ImageView diaryImage;
+    private String collectionPath;
+    private DataPresenter mDataPresenter;
+    private CoordinatorLayout mParentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +78,12 @@ public class UpdateActivity extends AppCompatActivity {
             actionBar.setTitle(updateThought.getTitle());
         }
 
+        mParentView = findViewById(R.id.update_container);
         diaryImage = findViewById(R.id.diary_image);
 
         mStorage = FirebaseStorage.getInstance();
         StorageReference reference = FirebaseStorage.getInstance().getReference();
-        mController = Controller.getInstance();
+        mDataPresenter = DataPresenter.getInstance();
 
 
         if (updateThought.getPhotoUrl() != null) {
@@ -76,6 +93,7 @@ public class UpdateActivity extends AppCompatActivity {
                     .into(diaryImage);
         }
 
+        // for shared element transition
         if (getIntent().getStringExtra(TRANSITION_EXTRA) != null) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -99,7 +117,6 @@ public class UpdateActivity extends AppCompatActivity {
         // that will be a unique document path for the user in the database
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         collectionPath = sharedPreferences.getString(getString(R.string.user_uid_preference), "default");
-
 
 
     }
@@ -126,7 +143,7 @@ public class UpdateActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(UpdateActivity.this, R.string.loading_message, Toast.LENGTH_LONG).show();
+        Snackbar.make(mParentView, R.string.loading_message, Snackbar.LENGTH_LONG).show();
 
         // update an entry
         String oldTitle = updateThought.getTitle();
@@ -135,7 +152,7 @@ public class UpdateActivity extends AppCompatActivity {
         updateThought.setDescription(mDescriptionText.getText().toString());
 
 
-        mController.updateThought(collectionPath, oldTitle, updateThought)
+        mDataPresenter.updateThought(collectionPath, oldTitle, updateThought)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> pTask) {
@@ -145,13 +162,13 @@ public class UpdateActivity extends AppCompatActivity {
                             openDetail(updateThought);
                             finish();
                         } else
-                            Toast.makeText(UpdateActivity.this, R.string.failure_message, Toast.LENGTH_LONG).show();
+                            Snackbar.make(mParentView, R.string.failure_message, Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
 
 
-    void openDetail(Thought pThought) {
+    private void openDetail(Thought pThought) {
         Intent intent = new Intent(this, ThoughtDetailActivity.class);
         intent.putExtra(ThoughtDetailActivity.VIEW_THOUGHT_EXTRA, pThought);
         intent.putExtra(ThoughtDetailActivity.TRANSITION_EXTRA, ThoughtDetailActivity.TRANSITION_VALUE);

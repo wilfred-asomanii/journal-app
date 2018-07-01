@@ -1,3 +1,18 @@
+/**
+ * Copyright 2018 Wilfred Agyei Asomani
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.devwilfred.journally.model;
 
 import com.google.firebase.firestore.Exclude;
@@ -11,7 +26,6 @@ import java.util.Date;
  */
 public class Thought implements Serializable {
 
-    private String mId;
     private String mTitle;
     private String mDescription;
     private String mTag;
@@ -26,36 +40,20 @@ public class Thought implements Serializable {
 
     }
 
-    public Thought(String pmId, String pmTitle, String pmDescription, String pTag) {
-        mId = pmId;
-        mTitle = pmTitle;
-        mDescription = pmDescription;
-        mTag = "#" + pTag;
-    }
-
-    public Thought(String pmId, String pmTitle, String pmDescription, String pTag, String pPhotoUrl) {
-        mId = pmId;
-        mTitle = pmTitle;
-        mDescription = pmDescription;
-        mTag = pTag;
-        mPhotoUrl = pPhotoUrl;
-    }
-
-
+    /**
+     * an ID of sorts
+     * @return a unique identifier for each entry
+     */
     public String getIdentifier() {
         return mIdentifier;
     }
 
+    /**
+     * set the identifier
+     * @param pIdentifier the identifier
+     */
     public void setIdentifier(String pIdentifier) {
         mIdentifier = pIdentifier;
-    }
-
-    public String getId() {
-        return mId;
-    }
-
-    public void setId(String pId) {
-        mId = pId;
     }
 
     public String getTitle() {
@@ -90,6 +88,10 @@ public class Thought implements Serializable {
         mPhotoUrl = pPhotoUrl;
     }
 
+    /**
+     * get the date this entry was made
+     * @return a date (from firestore)
+     */
     @ServerTimestamp
     public Date getWhen() {
         return mWhen;

@@ -1,4 +1,20 @@
-package com.devwilfred.journally.controller;
+/**
+ * Copyright 2018 Wilfred Agyei Asomani
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.devwilfred.journally.presenter;
 
 import com.devwilfred.journally.model.Thought;
 import com.google.android.gms.tasks.Task;
@@ -9,27 +25,36 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 
-public class Controller {
+/**
+ * this singleton contains logic for crud operations on the
+ * database
+ */
+public class DataPresenter {
 
     private StorageReference mReference;
     private FirebaseFirestore mFirebaseFirestore;
 
 
-    private static Controller instance;
+    private static DataPresenter instance;
 
 
-    private Controller() {
+    private DataPresenter() {
+        // initialise firebase storage and firestore
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mReference = firebaseStorage.getReference();
         mFirebaseFirestore = FirebaseFirestore.getInstance();
     }
 
     static {
-        instance = new Controller();
+        instance = new DataPresenter();
     }
 
-    /** Static 'instance' method */
-    public static Controller getInstance() {
+    /**
+     * get an instance of data presenter
+     * only one instance per application
+     * @return a new instance or an already existing instance
+     */
+    public static DataPresenter getInstance() {
         return instance;
     }
 

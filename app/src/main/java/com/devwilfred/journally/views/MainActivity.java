@@ -1,3 +1,18 @@
+/**
+ * Copyright 2018 Wilfred Agyei Asomani
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.devwilfred.journally.views;
 
 import android.content.Intent;
@@ -6,6 +21,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
@@ -23,13 +40,13 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.devwilfred.journally.adapters.DiaryAdapter;
+
+import com.devwilfred.journally.views.adapters.DiaryAdapter;
 import com.devwilfred.journally.R;
-import com.devwilfred.journally.adapters.SearchAdapter;
-import com.devwilfred.journally.controller.Controller;
+import com.devwilfred.journally.views.adapters.SearchAdapter;
+import com.devwilfred.journally.presenter.DataPresenter;
 import com.devwilfred.journally.model.Thought;
-import com.devwilfred.journally.adapters.ThoughtClickListener;
+import com.devwilfred.journally.views.adapters.ThoughtClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.android.gms.auth.api.Auth;
@@ -54,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, ThoughtClickListener, FilterFragment.ReceiveFilter {
 
     RecyclerView mRecyclerView;
-    TextView mErrorView, mIsFilterTv, mFilterTv;
+    TextView mNoThoughtsTv, mIsFilterTv, mFilterTv;
     FrameLayout mFilterBarContainer;
     Toolbar mToolbar;
 
@@ -71,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements
     // hold entries in a list to be able to search
     private List<Thought> mThoughts = new ArrayList<>();
     private SearchAdapter mSearchAdapter;
-    private Controller mController;
+    private DataPresenter mDataPresenter;
+    private CoordinatorLayout mParentView;
 
 
     @Override
@@ -103,12 +121,13 @@ public class MainActivity extends AppCompatActivity implements
 
         FirebaseFirestore.setLoggingEnabled(true);
 
-        mController = Controller.getInstance();
+        mDataPresenter = DataPresenter.getInstance();
 
         mFirebaseFirestore = FirebaseFirestore.getInstance();
         mFirebaseFirestore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true).build());
 
+        mParentView = findViewById(R.id.root);
         mToolbar = findViewById(R.id.home_toolbar);
         mRecyclerView = findViewById(R.id.thought_recycler);
         mFilterBarContainer = findViewById(R.id.filter_bar_container);
@@ -124,9 +143,11 @@ public class MainActivity extends AppCompatActivity implements
             actionBar.setTitle(mFirebaseUser.getDisplayName());
         }
 
-        mErrorView = findViewById(R.id.no_notes);
+        mNoThoughtsTv = findViewById(R.id.no_thoughts);
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mReference = firebaseStorage.getReference();
+
+        // select entries from the user's unique path using Uid
         mQuery = mFirebaseFirestore.collection(mFirebaseUser.getUid()).orderBy(getString(R.string.field_when),
                 Query.Direction.DESCENDING);
 
@@ -147,11 +168,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
 
-                mController.deleteThought(mFirebaseUser.getUid(), (String) viewHolder.itemView.getTag())
+                mDataPresenter.deleteThought(mFirebaseUser.getUid(), (String) viewHolder.itemView.getTag())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(MainActivity.this, R.string.delete_done, Toast.LENGTH_LONG).show();
+                                Snackbar.make(mParentView, R.string.delete_done, Snackbar.LENGTH_LONG).show();
 
                                 if (mSearchAdapter != null) {
                                     mSearchAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
@@ -162,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MainActivity.this, R.string.failure_message, Toast.LENGTH_LONG).show();
+                                Snackbar.make(mParentView, R.string.failure_message, Snackbar.LENGTH_LONG).show();
                             }
                         });
             }
@@ -187,9 +208,10 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult pConnectionResult) {
-
+        Snackbar.make(mParentView, R.string.failure_message, Snackbar.LENGTH_LONG).show();
     }
 
+    // fab onClick method
     public void openAddActivity(View view) {
         Intent addActivityIntent = new Intent(this, AddActivity.class);
         startActivity(addActivityIntent);
@@ -202,9 +224,11 @@ public class MainActivity extends AppCompatActivity implements
         final MenuItem searchView = menu.findItem(R.id.search);
 
         searchView.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+
             @Override
             public boolean onMenuItemActionExpand(MenuItem pMenuItem) {
 
+                // update ui when search expands
                 mToolbar.setBackgroundColor(Color.parseColor(mColorPrimaryDark));
                 mFilterBarContainer.setVisibility(View.GONE);
 
@@ -214,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public boolean onMenuItemActionCollapse(MenuItem pMenuItem) {
 
+                // update ui when search collapses
                 mToolbar.setBackgroundColor(Color.parseColor(mColorPrimary));
                 mFilterBarContainer.setVisibility(View.VISIBLE);
 
@@ -238,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public boolean onQueryTextChange(String pS) {
 
+                // search through entries
                 List<Thought> searchRes = new ArrayList<>();
 
                 for (Thought i : mThoughts) {
@@ -302,8 +328,8 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }).build();
 
-        // update the mDiaryAdapter and set it to the recycler mErrorView
-        mDiaryAdapter = new DiaryAdapter(options, mErrorView, mReference, this);
+        // update the mDiaryAdapter and set it to the recycler mNoThoughtsTv
+        mDiaryAdapter = new DiaryAdapter(options, mNoThoughtsTv, mReference, this);
         mDiaryAdapter.startListening();
 
 
@@ -311,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(mDiaryAdapter);
     }
 
+    // clear filter onClick method
     public void clearFilter(View view) {
 
         mIsFilterTv.setText(R.string.no_filter);
@@ -329,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra(ThoughtDetailActivity.VIEW_THOUGHT_EXTRA, pModel);
         intent.putExtra(ThoughtDetailActivity.TRANSITION_EXTRA, ViewCompat.getTransitionName(pImageView));
 
+        // shared element transition
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this, pImageView, ViewCompat.getTransitionName(pImageView));
 

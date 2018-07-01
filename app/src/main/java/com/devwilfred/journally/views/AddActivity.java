@@ -1,3 +1,18 @@
+/**
+ * Copyright 2018 Wilfred Agyei Asomani
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.devwilfred.journally.views;
 
 import android.app.ProgressDialog;
@@ -9,6 +24,8 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
@@ -23,7 +40,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.devwilfred.journally.R;
-import com.devwilfred.journally.controller.Controller;
+import com.devwilfred.journally.presenter.DataPresenter;
 import com.devwilfred.journally.model.Thought;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,20 +51,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-
+/**
+ * make an entry into the database from this class
+ */
 public class AddActivity extends AppCompatActivity {
 
     private EditText mTagText, mTitleText, mDescriptionText;
     private ImageView diaryImage;
     private Button addPhotoBtn;
+    CoordinatorLayout mParentView;
 
     private String collectionPath;
     private String imageUrl;
     private Uri filePath;
     byte[] imageData;
-    Thought thought;
-    ProgressDialog progressDialog;
-    private Controller mController;
+    private Thought thought;
+    private ProgressDialog progressDialog;
+    private DataPresenter mDataPresenter;
 
     public static final int IMAGE_REQUEST = 1022;
 
@@ -68,8 +88,9 @@ public class AddActivity extends AppCompatActivity {
 
 
 
-        mController = Controller.getInstance();
+        mDataPresenter = DataPresenter.getInstance();
 
+        mParentView = findViewById(R.id.add_container);
         mTagText = findViewById(R.id.tag_edit_text);
         mTitleText = findViewById(R.id.title_edit_text);
 
@@ -77,7 +98,7 @@ public class AddActivity extends AppCompatActivity {
         diaryImage = findViewById(R.id.diary_image);
 
         // get the user's uid from shared preferences
-        // that will be a unique document path for the user in the database
+        // that will be a unique collection path for the user in the database
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         collectionPath = sharedPreferences.getString(getString(R.string.user_uid_preference), "default");
 
@@ -85,12 +106,14 @@ public class AddActivity extends AppCompatActivity {
 
     }
 
+    // select image button onClick method
     public void selectImage(View view) {
         Intent imageIntent = new Intent(Intent.ACTION_GET_CONTENT);
         imageIntent.setType("image/*");
         startActivityForResult(Intent.createChooser(imageIntent, getString(R.string.image_chooser_title)),
                 IMAGE_REQUEST);
     }
+
 
     public void addToDiary(View view) {
 
@@ -105,6 +128,7 @@ public class AddActivity extends AppCompatActivity {
         // none of the fields must be empty
         if (mTitleText.getText().length() < 1 || mTagText.getText().length() < 1
                 || mDescriptionText.getText().length() < 1) {
+            // show error
             titleTextInput.setError(getString(R.string.empty_field_error));
             tagTextInput.setError(getString(R.string.empty_field_error));
             descriptionTextInput.setError(getString(R.string.empty_field_error));
@@ -112,8 +136,7 @@ public class AddActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, R.string.loading_message, Toast.LENGTH_LONG).show();
-
+        Snackbar.make(mParentView,  R.string.loading_message, Snackbar.LENGTH_LONG).show();
         // create new entry
             progressDialog = new ProgressDialog(this);
             progressDialog.setTitle(getString(R.string.loading_message));
@@ -131,7 +154,7 @@ public class AddActivity extends AppCompatActivity {
             thought.setTag(getString(R.string.tag_template, mTagText.getText().toString()));
             thought.setWhen(new Date());
 
-            mController.addThought(collectionPath, thought).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mDataPresenter.addThought(collectionPath, thought).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> pTask) {
                     if (pTask.isSuccessful()) {
@@ -141,8 +164,7 @@ public class AddActivity extends AppCompatActivity {
                             finish();
                         }
                     } else
-                        Toast.makeText(AddActivity.this, R.string.failure_message, Toast.LENGTH_LONG).show();
-
+                        Snackbar.make(mParentView,  R.string.failure_message, Snackbar.LENGTH_LONG).show();
                 }
             });
     }
@@ -150,7 +172,7 @@ public class AddActivity extends AppCompatActivity {
     protected void uploadImage(byte[] pData) {
 
         // upload image to firebase storage
-        mController.upLoadImage(pData, collectionPath, mTitleText.getText().toString()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        mDataPresenter.upLoadImage(pData, collectionPath, mTitleText.getText().toString()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot pTaskSnapshot) {
 
@@ -161,7 +183,7 @@ public class AddActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception pE) {
-                Toast.makeText(AddActivity.this, R.string.failure_message, Toast.LENGTH_LONG).show();
+                Snackbar.make(mParentView,  R.string.failure_message, Snackbar.LENGTH_LONG).show();
             }
         });
         imageUrl = collectionPath + "/" + mTitleText.getText().toString();
@@ -189,7 +211,7 @@ public class AddActivity extends AppCompatActivity {
             filePath = data.getData();
             addPhotoBtn.setVisibility(View.GONE);
 
-            // set the received image onto the image mErrorView and compress it
+            // set the received image onto the image mNoThoughtsTv and compress it
             try {
 
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
