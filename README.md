@@ -3,9 +3,6 @@
 This is an App with which users can put down thoughts, feelings or even other important stuff for safe keeping.
 This project is the final challenge of the 2018 ALCwithGoogle programme.
 
-This project is the direct result of the motivation I've got from ALC to take my android develompent
-to another level.
-
 This is a relatively simple implementaion of CRUD using Firebase Firestore, Storage and Material Design.
 Text input are stored in Firestore, images attached are uploaded to cloud storage.
 This data is persistent online, hence, even if the user logs into another device, their data are available.
@@ -57,6 +54,9 @@ Follow [Add Google Authentication](https://developers.google.com/identity/sign-i
 * **Wilfred Agyei Asomani** 
 
 See also the list of [contributors](https://github.com/wil-power/Journally/graphs/contributors).
+
+## Contribution
+Ideas to make this much better are accepted.
 
 ## License
 
