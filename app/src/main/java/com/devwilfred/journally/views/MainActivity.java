@@ -126,24 +126,6 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseFirestore = FirebaseFirestore.getInstance();
         mFirebaseFirestore.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true).build());
-
-        mParentView = findViewById(R.id.root);
-        mToolbar = findViewById(R.id.home_toolbar);
-        mRecyclerView = findViewById(R.id.thought_recycler);
-        mFilterBarContainer = findViewById(R.id.filter_bar_container);
-        mFilterTv = findViewById(R.id.current_filter);
-        mIsFilterTv = findViewById(R.id.is_filtered_tv);
-
-
-        setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setTitle(mFirebaseUser.getDisplayName());
-        }
-
-        mNoThoughtsTv = findViewById(R.id.no_thoughts);
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mReference = firebaseStorage.getReference();
 
@@ -151,9 +133,15 @@ public class MainActivity extends AppCompatActivity implements
         mQuery = mFirebaseFirestore.collection(mFirebaseUser.getUid()).orderBy(getString(R.string.field_when),
                 Query.Direction.DESCENDING);
 
+
+        setUpViews();
         setRecyclerWithQuery();
+        attachSwipeListener();
 
 
+    }
+
+    private void attachSwipeListener() {
         /*
          * implementing swipe left to delete.
          */
@@ -188,7 +176,26 @@ public class MainActivity extends AppCompatActivity implements
                         });
             }
         }).attachToRecyclerView(mRecyclerView);
+    }
 
+    private void setUpViews() {
+        mParentView = findViewById(R.id.root);
+        mToolbar = findViewById(R.id.home_toolbar);
+        mRecyclerView = findViewById(R.id.thought_recycler);
+        mFilterBarContainer = findViewById(R.id.filter_bar_container);
+        mFilterTv = findViewById(R.id.current_filter);
+        mIsFilterTv = findViewById(R.id.is_filtered_tv);
+
+
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setTitle(mFirebaseUser.getDisplayName());
+        }
+
+        mNoThoughtsTv = findViewById(R.id.no_thoughts);
     }
 
     @Override
@@ -253,32 +260,34 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        ((SearchView) searchView.getActionView()).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        SearchView searchMenuItem = (SearchView) searchView.getActionView();
+        if (searchMenuItem != null) {
+            searchMenuItem.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-            @Override
-            public boolean onQueryTextSubmit(String pS) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String pS) {
-
-                // search through entries
-                List<Thought> searchRes = new ArrayList<>();
-
-                for (Thought i : mThoughts) {
-                    if (i.getTitle().toLowerCase().contains(pS.toLowerCase()) ||
-                            i.getDescription().toLowerCase().contains(pS.toLowerCase()))
-                        searchRes.add(i);
+                @Override
+                public boolean onQueryTextSubmit(String pS) {
+                    return false;
                 }
 
-                mSearchAdapter = new SearchAdapter(searchRes);
-                mRecyclerView.setAdapter(mSearchAdapter);
+                @Override
+                public boolean onQueryTextChange(String pS) {
 
-                return true;
-            }
-        });
+                    // search through entries
+                    List<Thought> searchRes = new ArrayList<>();
 
+                    for (Thought i : mThoughts) {
+                        if (i.getTitle().toLowerCase().contains(pS.toLowerCase()) ||
+                                i.getDescription().toLowerCase().contains(pS.toLowerCase()))
+                            searchRes.add(i);
+                    }
+
+                    mSearchAdapter = new SearchAdapter(searchRes);
+                    mRecyclerView.setAdapter(mSearchAdapter);
+
+                    return true;
+                }
+            });
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -352,24 +361,35 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onThoughtClicked(Thought pModel, ImageView pImageView) {
 
-        Intent intent = new Intent(this, ThoughtDetailActivity.class);
-        intent.putExtra(ThoughtDetailActivity.VIEW_THOUGHT_EXTRA, pModel);
-        intent.putExtra(ThoughtDetailActivity.TRANSITION_EXTRA, ViewCompat.getTransitionName(pImageView));
-
-        // shared element transition
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this, pImageView, ViewCompat.getTransitionName(pImageView));
-
-        startActivity(intent, options.toBundle());
+        startActivityAnim(pModel, pImageView, ThoughtDetailActivity.VIEW_THOUGHT_EXTRA, ThoughtDetailActivity.TRANSITION_EXTRA);
     }
 
 
     @Override
     public void onThoughtLongClicked(Thought pModel, ImageView pImageView) {
-        Intent intent = new Intent(this, UpdateActivity.class);
-        intent.putExtra(UpdateActivity.UPDATE_THOUGHT, pModel);
-        intent.putExtra(UpdateActivity.TRANSITION_EXTRA, ViewCompat.getTransitionName(pImageView));
 
+        startActivityAnim(pModel, pImageView, UpdateActivity.UPDATE_THOUGHT, UpdateActivity.TRANSITION_EXTRA);
+    }
+
+
+    /**
+     * convenience method to start activity with shared element animation
+     * @param pModel the data passed
+     * @param pImageView the shared element
+     * @param pModelTag to tag the data in an intent
+     * @param pTransitionExtra to tag the transition name
+     */
+    private void startActivityAnim(Thought pModel, ImageView pImageView, String pModelTag, String pTransitionExtra) {
+
+        Intent intent;
+
+        if (pModelTag.equals(UpdateActivity.UPDATE_THOUGHT)) intent = new Intent(this, UpdateActivity.class);
+        else intent = new Intent(this, ThoughtDetailActivity.class);
+
+        intent.putExtra(pModelTag, pModel);
+        intent.putExtra(pTransitionExtra, ViewCompat.getTransitionName(pImageView));
+
+        // shared element transition
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this, pImageView, ViewCompat.getTransitionName(pImageView));
 

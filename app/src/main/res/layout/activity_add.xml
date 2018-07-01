@@ -39,7 +39,7 @@
             <android.support.design.widget.TextInputLayout
                 android:hint="@string/hint_title"
                 android:id="@+id/title_text_input_layout"
-                style="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox.Dense"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/standard_margin">
@@ -49,13 +49,14 @@
                     android:inputType="text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:hint="@string/hint_tag"
                 android:id="@+id/tag_text_input_layout"
-                style="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox.Dense"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/standard_margin">
@@ -65,14 +66,14 @@
                     android:inputType="text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="13sp"/>
+                    style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:hint="@string/description_hint"
                 android:id="@+id/description_text_input_layout"
-                style="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox.Dense"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/standard_margin">
@@ -82,8 +83,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:lines="10"
-                    android:textSize="13sp"/>
+                    android:lines="7"
+                    style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox" />
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
