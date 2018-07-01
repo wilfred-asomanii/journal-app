@@ -74,7 +74,6 @@ public class DataPresenter {
 
     /**
      * update an entry
-     * weird implementation of update
      * @param pUserUid collection path
      * @param pOldThought path of the entry to be updated
      * @param pNewThought the updated entry

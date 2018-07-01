@@ -226,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         final MenuItem searchView = menu.findItem(R.id.search);
@@ -266,11 +267,6 @@ public class MainActivity extends AppCompatActivity implements
 
                 @Override
                 public boolean onQueryTextSubmit(String pS) {
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String pS) {
 
                     // search through entries
                     List<Thought> searchRes = new ArrayList<>();
@@ -285,6 +281,12 @@ public class MainActivity extends AppCompatActivity implements
                     mRecyclerView.setAdapter(mSearchAdapter);
 
                     return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String pS) {
+
+                    return false;
                 }
             });
         }
@@ -303,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements
                 finish();
                 break;
 
-
             default:
                 super.onOptionsItemSelected(item);
         }
@@ -320,7 +321,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setRecyclerWithQuery() {
-
         /*
           hint from
           https://github.com/firebase/FirebaseUI-Android/issues/1131
@@ -374,16 +374,18 @@ public class MainActivity extends AppCompatActivity implements
 
     /**
      * convenience method to start activity with shared element animation
-     * @param pModel the data passed
-     * @param pImageView the shared element
-     * @param pModelTag to tag the data in an intent
+     *
+     * @param pModel           the data passed
+     * @param pImageView       the shared element
+     * @param pModelTag        to tag the data in an intent
      * @param pTransitionExtra to tag the transition name
      */
     private void startActivityAnim(Thought pModel, ImageView pImageView, String pModelTag, String pTransitionExtra) {
 
         Intent intent;
 
-        if (pModelTag.equals(UpdateActivity.UPDATE_THOUGHT)) intent = new Intent(this, UpdateActivity.class);
+        if (pModelTag.equals(UpdateActivity.UPDATE_THOUGHT))
+            intent = new Intent(this, UpdateActivity.class);
         else intent = new Intent(this, ThoughtDetailActivity.class);
 
         intent.putExtra(pModelTag, pModel);
