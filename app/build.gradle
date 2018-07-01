@@ -9,6 +9,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -34,8 +36,11 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-storage:0.6.0'
 
     // firebase
+    implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-firestore:17.0.2'
     implementation 'com.google.firebase:firebase-storage:16.0.1'
+
+    implementation 'com.android.support:multidex:1.0.3'
 
 
     // authentication
