@@ -20,11 +20,8 @@ Follow [Add Google Authentication](https://developers.google.com/identity/sign-i
 
 # Screenshots
 
-![screen1](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-200912%5B1%5D.png)
-![screen2](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-201002.png)
-![screen3](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-200852.png)
-![screen4](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202451.png)
-![screen5](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202500.png)
+![screen1](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-200912%5B1%5D.png)![screen2](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-201002.png)![screen3](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-200852.png)
+![screen4](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202451.png)![screen5](https://github.com/wil-power/journal-app/blob/master/Screenshot_20180701-202500.png)
 
 ## Features
 * Google Sign in.
