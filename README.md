@@ -14,10 +14,6 @@ To run this code or install the APK directly, you need:
 * Add Google Authentication to the project. 
 Follow [Add Google Authentication](https://developers.google.com/identity/sign-in/android/start-integrating)
 
-```
-Give examples
-```
-
 ### Installing APK
 * Make sure Google Play Services is installed on target device.
 
@@ -49,7 +45,7 @@ See also the list of [contributors](https://github.com/wil-power/Journally/graph
 
 ## License
 
-This project is licensed under the Apache License v2 - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the Apache License v2 - see the [LICENSE.md](https://github.com/wil-power/journal-app/blob/master/LICENSE) file for details
 
 ## Acknowledgments
 
